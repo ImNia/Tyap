@@ -10,23 +10,24 @@
 
 %token ID
 %token NUM
+%token COMPARISON
+%token PRINT SCAN INT DOUBLE WHILE IF ELSE
 %right ASSIGN
-%left ADD SUB
-%left MUL DIV
+%left OPERATION
 %nonassoc BRAC
 
 %%
-prog: expr | prog expr 
-expr: ID ASSIGN logexp ';' |
-        error ';'
-logexp: [lodexp] BRAC logexp BRAC [logexp] { printf("bracket\n"); } |
-        logexp MUL logexp { printf("mul\n"); } |
-		logexp DIV logexp { printf("div\n"); } |
-		logexp ADD logexp { printf("add\n"); } |
-		logexp SUB logexp { printf("sub\n"); } |
-        d
-d: ID { printf("id\n"); }
-    | NUM { printf("num\n"); }
+prog: | cycle prog
+
+cycle: PRINT expr ';' | WHILE '(' comp ')' '{' tran '}' | IF '(' comp ')' '{' tran '}' | IF '(' comp ')' '{' tran '}' ELSE '{' tran '}' | SCAN expr ';' | INT defin ';' | DOUBLE defin ';'
+
+tran: cycle | tran cycle
+
+defin: ID '=' expr ';' | ID
+
+expr: NUM | ID | '-' expr | expr OPERATION expr | '(' expr ')' 
+
+comp: expr COMPARISON expr
 
 %%
 
