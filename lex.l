@@ -18,7 +18,7 @@ operation[*/\+\-]
 
 [-+]?({digit}*\.{digit}+|{digit}+\.|{digit}+)([eE][-+]?{digit}+)?[flFL]? { ch += yyleng; return NUM; }
 
-"=" { ch += yyleng; return ASSIGN; }
+"=" { ch += yyleng; return *yytext; }
 
 "print" { ch += yyleng; return PRINT; }
 "scan" { ch += yyleng; return SCAN; }
@@ -35,7 +35,7 @@ operation[*/\+\-]
 {operation} { ch += yyleng; return OPERATION; }
 
 {delim} { ch += yyleng; return *yytext; }
-{brac} { ch += yyleng; return BRAC; }
+{brac} { ch += yyleng; return *yytext; }
 {ws}+ { ch += yyleng; }
 
 . { ch += yyleng; }
