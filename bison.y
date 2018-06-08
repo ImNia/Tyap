@@ -1,6 +1,6 @@
 %{
 	#include <iostream>
-    #include <tree.h>
+    #include "tree.h"
 	extern FILE *yyin;
 	extern int yylineno;
 	extern int ch;
@@ -24,7 +24,7 @@
 %left OPERATION
 %nonassoc BRAC
 
-%type<node> try
+%type<node> try expr
 %type<str> ID NUM
 
 %%
@@ -46,13 +46,13 @@ defin: ID '=' expr ';'|
         ID
 
 try: ID '=' expr ';' {
-        Tree *node = new Tree("=");
-        Tree *node_id = new Tree($1);
+        Tree *node = new Tree("=", 0);
+        Tree *node_id = new Tree($1, 0);
         node->addChild(node_id);
         node->addChild($3);
         $$ = node; }
 
-expr: NUM { $$ new Tree($1, 0); } | 
+expr: NUM { $$ = new Tree($1, 0); } | 
         ID { $$ = new Tree($1, 0); } | 
         '-' expr | expr OPERATION expr | '(' expr ')' 
 
