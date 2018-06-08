@@ -47,12 +47,13 @@ defin: ID '=' expr ';'|
 
 try: ID '=' expr ';' {
         Tree *node = new Tree("=");
-        node->addChild($1);
+        Tree *node_id = new Tree($1);
+        node->addChild(node_id);
         node->addChild($3);
         $$ = node; }
 
-expr: NUM { $$ = new Tree($1, 0); } | 
-        ID { $$ = new Tree($1, 0) } | 
+expr: NUM { $$ new Tree($1, 0); } | 
+        ID { $$ = new Tree($1, 0); } | 
         '-' expr | expr OPERATION expr | '(' expr ')' 
 
 comp: expr COMPARISON expr
