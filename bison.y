@@ -5,10 +5,9 @@
 	extern int yylineno;
 	extern int ch;
  	extern char *yytext;
-    extern char yylex();
+    extern int yylex();
 	void yyerror(char *);
 
-//    extern char yylval;
 %}
 
 %union{
