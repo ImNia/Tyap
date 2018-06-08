@@ -4,17 +4,17 @@
 #include <string>
 
 enum types {
-    ASSIGN, // =
-    MATH, // +-/*
-    INT, // token int (int foo)
-    DOUBLE, // token double
-    ID, // variable
-    CONST, // some const (f.e. 2)
-    IF, // token if
-    ELSE, // token else
-    WHILE, // token while
-    PRINT, // token print
-    SCAN // token write
+    _ASSIGN, // =
+    _MATH, // +-/*
+    _INT, // token int (int foo)
+    _DOUBLE, // token double
+    _ID, // variable
+    _CONST, // some const (f.e. 2)
+    _IF, // token if
+    _ELSE, // token else
+    _WHILE, // token while
+    _PRINT, // token print
+    _SCAN // token write
 };
 
 class Tree

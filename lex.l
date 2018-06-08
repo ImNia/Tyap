@@ -1,5 +1,6 @@
 %option noyywrap yylineno nodefault
 %{
+    #include "tree.h"
     #include <iostream>
     #include "y.tab.h"
     int ch;
