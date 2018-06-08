@@ -37,7 +37,12 @@ operation[*/\+\-]
 "if" { ch += yyleng; return IF; }
 "else" { ch += yyleng; return ELSE;}
 
+">" { ch += yyleng; return COMPARISON; }
+"<" { ch += yyleng; return COMPARISON; }
+">=" { ch += yyleng; return COMPARISON; }
+"<=" { ch += yyleng; return COMPARISON; }
 "==" { ch += yyleng; return COMPARISON; }
+"!=" { ch += yyleng; return COMPARISON; }
 
 {operation} { ch += yyleng; return OPERATION; }
 
