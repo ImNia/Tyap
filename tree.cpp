@@ -25,7 +25,7 @@ void Tree::addChild(Tree *obj)
 {
     child.push_back(obj);
 }
-
+/*
 int main()
 {
     //int a = 2 + 2 * 2;
@@ -51,3 +51,4 @@ int main()
 
     return 0;
 }
+*/

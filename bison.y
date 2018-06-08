@@ -1,12 +1,20 @@
 %{
 	#include <iostream>
+    #include <tree.h>
 	extern FILE *yyin;
 	extern int yylineno;
 	extern int ch;
-	extern char *yytext;
+ 	extern char *yytext;
     extern char yylex();
 	void yyerror(char *);
+
+//    extern char yylval;
 %}
+
+%union{
+    Tree *node;
+    char *str;
+}
 
 %token ID
 %token NUM
@@ -16,16 +24,36 @@
 %left OPERATION
 %nonassoc BRAC
 
+%type<node> try
+%type<str> ID NUM
+
 %%
 prog: | cycle prog
 
-cycle: PRINT expr ';' | WHILE '(' comp ')' '{' tran '}' | IF '(' comp ')' '{' tran '}' | IF '(' comp ')' '{' tran '}' ELSE '{' tran '}' | SCAN expr ';' | INT defin ';' | DOUBLE defin ';'
+cycle: PRINT expr ';' | 
+        WHILE '(' comp ')' '{' tran '}' |
+        IF '(' comp ')' '{' tran '}' | 
+        IF '(' comp ')' '{' tran '}' ELSE '{' tran '}' | 
+        SCAN expr ';' | 
+        INT defin ';' | 
+        DOUBLE defin ';' | 
+        try
 
-tran: cycle | tran cycle
+tran: cycle | 
+        tran cycle
 
-defin: ID '=' expr ';' | ID
+defin: ID '=' expr ';'| 
+        ID
 
-expr: NUM | ID | '-' expr | expr OPERATION expr | '(' expr ')' 
+try: ID '=' expr ';' {
+        Tree *node = new Tree("=");
+        node->addChild($1);
+        node->addChild($3);
+        $$ = node; }
+
+expr: NUM { $$ = new Tree($1, 0); } | 
+        ID { $$ = new Tree($1, 0) } | 
+        '-' expr | expr OPERATION expr | '(' expr ')' 
 
 comp: expr COMPARISON expr
 
@@ -48,6 +76,8 @@ int main(int argc, char **argv)
 		printf("\nCannot open file %s.\n", argv[1]);
 		return -1;
 	}
+
+//    Tree *root = new Tree(" ", 1);
 	ch = 1;
 	yylineno = 1;
 	yyparse();

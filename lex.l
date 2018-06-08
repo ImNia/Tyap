@@ -14,9 +14,15 @@ ws[ \t\n]
 operation[*/\+\-]
 %%
 
-("_"|{letter})("_"|{letter}|{digit})* { ch += yyleng; return ID;}
+("_"|{letter})("_"|{letter}|{digit})* { 
+        ch += yyleng; 
+        yylval.str = strdup(yytext); 
+        return ID; }
 
-[-+]?({digit}*\.{digit}+|{digit}+\.|{digit}+)([eE][-+]?{digit}+)?[flFL]? { ch += yyleng; return NUM; }
+[-+]?({digit}*\.{digit}+|{digit}+\.|{digit}+)([eE][-+]?{digit}+)?[flFL]? { 
+        ch += yyleng; 
+        yylval.str = strdup(yytext); 
+        return NUM; }
 
 "=" { ch += yyleng; return *yytext; }
 
