@@ -1,6 +1,7 @@
 %{
 	#include <iostream>
     #include "tree.h"
+    #include "compiler.h"
 	extern FILE *yyin;
 	extern int yylineno;
 	extern int ch;
@@ -38,7 +39,7 @@ cycle: PRINT expr ';' {
             node->addChild($2);
             $$ = node; } | 
         WHILE '(' comp ')' '{' tran '}' {
-            Tree *node = new Tree("while", _WHILE)
+            Tree *node = new Tree("while", _WHILE);
             node->addChild($3);
             $3->addChild($6);
             $$ = node; } |
@@ -120,7 +121,7 @@ void yyerror(char *errmsg)
 
 int main(int argc, char **argv)
 {
-	if(argc < 2)
+	if(argc < 3)
 	{
 		printf("\nNot enough arguments. Please specify filename. \n");
 		return -1;
@@ -135,5 +136,11 @@ int main(int argc, char **argv)
 	ch = 1;
 	yylineno = 1;
 	yyparse();
+    compile(root);
+    std::string cmd = "fasm ./include/tmp.asm ";
+    cmd += argv[2];
+    std::system(cmd.c_str());
+    cmd = "rm ./include/tmp.asm";
+    std::system(cmd.c_str());
 	return 0;
 }

@@ -15,7 +15,7 @@ enum types {
     _IFELSE, // token if-else
     _WHILE, // token while
     _PRINT, // token print
-    _SCAN // token write
+    _SCAN, // token write
     _COMP // comparison
 };
 
