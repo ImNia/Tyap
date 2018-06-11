@@ -28,6 +28,7 @@ class Tree
         std::string getToken();
         std::vector<Tree *> getChild();
         void addChild(Tree *obj);
+        int getType();
 
     private:
 		std::string value;
