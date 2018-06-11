@@ -7,7 +7,7 @@
  	extern char *yytext;
     extern int yylex();
 	void yyerror(char *);
-    Tree *root = new Tree("", 0);
+    Tree *root = new Tree("", _ROOT);
 %}
 
 %union{
@@ -34,43 +34,49 @@ prog: cycle {
             root->addChild($2); }
 
 cycle: PRINT expr ';' { 
-            Tree *node = new Tree("print", 0);
+            Tree *node = new Tree("print", _PRINT);
             node->addChild($2);
             $$ = node; } | 
         WHILE '(' comp ')' '{' tran '}' {
+            Tree *node = new Tree("while", _WHILE)
+            node->addChild($3);
             $3->addChild($6);
-            $$ = $3; } |
+            $$ = node; } |
         IF '(' comp ')' '{' tran '}' { 
+            Tree *node = new Tree("if", _IF);
+            node->addChild($3);
             $3->addChild($6);
-            $$ = $3; } | 
+            $$ = node; } | 
         IF '(' comp ')' '{' tran '}' ELSE '{' tran '}' { 
+            Tree *node = new Tree("if", _IFELSE);
+            node->addChild($3);
             $3->addChild($6);
             $3->addChild($10);
-            $$ = $3; } | 
+            $$ = node; } | 
         SCAN expr ';' {
-            Tree *node = new Tree("scan", 0);
+            Tree *node = new Tree("scan", _SCAN);
             node->addChild($2);
             $$ = node; } | 
         ID '=' expr ';' {
-            Tree *node = new Tree("=", 0);
+            Tree *node = new Tree("=", _ASSIGN);
             Tree *node_id = new Tree($1, 0);
             node->addChild(node_id);
             node->addChild($3);
             $$ = node; } |
         defin ID '=' expr ';' {
-            Tree *node = new Tree("=", 0);
-            Tree *node_id = new Tree($2, 0);
+            Tree *node = new Tree("=", _ASSIGN);
+            Tree *node_id = new Tree($2, _ID);
             node->addChild($1);
             node->addChild($4);
             $1->addChild(node_id);
             $$ = node; } |
         defin ID ';' {
-            Tree *node = new Tree($2, 0);
+            Tree *node = new Tree($2, _ID);
             $1->addChild(node);
             $$ = $1; }
 
 tran: cycle { 
-            Tree *node = new Tree(" ", 0);
+            Tree *node = new Tree(" ", _ROOT);
             node->addChild($1);
             $$ = node; } | 
         tran cycle { 
@@ -78,25 +84,21 @@ tran: cycle {
             $$ = $1; }
 
 defin: INT {
-            Tree *node = new Tree("int", 0);
+            Tree *node = new Tree("int", _INT);
             $$ = node;} | 
         DOUBLE {
-            Tree *node = new Tree("double", 0);
+            Tree *node = new Tree("double", _DOUBLE);
             $$ = node;}
 
-expr: NUM { $$ = new Tree($1, 0); } | 
-        ID { $$ = new Tree($1, 0); } | 
-        '-' expr { 
-            Tree *node = new Tree("-", 0);
-            node->addChild($2);
-            $$ = node; } | 
+expr: NUM { $$ = new Tree($1, _NUM); } | 
+        ID { $$ = new Tree($1, _ID); } |
         expr OPERATION_S expr {
-            Tree *node = new Tree($2, 0);
+            Tree *node = new Tree($2, _MATH);
             node->addChild($1);
             node->addChild($3);
             $$ = node; } | 
         expr OPERATION_F expr {
-            Tree *node = new Tree($2, 0);
+            Tree *node = new Tree($2, _MATH);
             node->addChild($1);
             node->addChild($3);
             $$ = node; } | 
@@ -104,7 +106,7 @@ expr: NUM { $$ = new Tree($1, 0); } |
             $$ = $2; }
 
 comp: expr COMPARISON expr {
-            Tree *node = new Tree($2, 0);
+            Tree *node = new Tree($2, _COMP);
             node->addChild($1);
             node->addChild($3); 
             $$ = node; }
