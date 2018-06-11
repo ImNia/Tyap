@@ -7,7 +7,7 @@
  	extern char *yytext;
     extern int yylex();
 	void yyerror(char *);
-
+    Tree *root = new Tree("", 0);
 %}
 
 %union{
@@ -23,79 +23,65 @@
 %left OPERATION
 %nonassoc BRAC
 
-%type<node> try expr cycle defin comp prog 
-%type<str> ID NUM
+%type<node> expr cycle defin comp prog tran
+%type<str> ID NUM OPERATION COMPARISON
 
 %%
-prog: | cycle prog { 
-            Tree *root = new Tree(" ", 0);
-            Tree *node = new Tree($1, 0);
-            root->addChild(node); }
+prog: cycle {
+            root->addChild($1); } | 
+        cycle prog { 
+            root->addChild($2); }
 
 cycle: PRINT expr ';' { 
             Tree *node = new Tree("print", 0);
             node->addChild($2);
             $$ = node; } | 
         WHILE '(' comp ')' '{' tran '}' {
-            Tree *node = new Tree($3, 0);
-            Tree *node_empty = new Tree(" ", 0);
-            node_empty->addChild($6);
-            node->addChild(node_empty);
-            $$ = node; } |
+            $3->addChild($6);
+            $$ = $3; } |
         IF '(' comp ')' '{' tran '}' { 
-            Tree *node = new Tree($3, 0);
-            Tree *node_empty = new Tree(" ", 0);
-            node_empty->addChild($6);
-            node->addChild(node_empty);
-            $$ = node; } | 
+            $3->addChild($6);
+            $$ = $3; } | 
         IF '(' comp ')' '{' tran '}' ELSE '{' tran '}' { 
-            Tree *node = new Tree($3, 0);
-            Tree *node_empty = new Tree(" ", 0);
-            Tree *node_else = new Tree(" ", 0);
-            node_empty->addChild($6);
-            node_else->addChild($10);
-            node->addChild(node_empty);
-            node->addChild(node_else);
-            $$ = node; } | 
+            $3->addChild($6);
+            $3->addChild($10);
+            $$ = $3; } | 
         SCAN expr ';' {
             Tree *node = new Tree("scan", 0);
             node->addChild($2);
             $$ = node; } | 
-        INT defin ';' {
-            Tree *node = new Tree("int", 0);
-            node->addChild($2);
-            $$ = node; } | 
-        DOUBLE defin ';' {
-            Tree *node = new Tree("double", 0);
-            node->addChild($2);
-            $$ = node; } | 
-        try {
-            Tree *node = new Tree($1, 0);
-            $$ = node; }
+        ID '=' expr ';' {
+            Tree *node = new Tree("=", 0);
+            Tree *node_id = new Tree($1, 0);
+            node->addChild(node_id);
+            node->addChild($3);
+            $$ = node; } |
+        defin ID '=' expr ';' {
+            Tree *node = new Tree("=", 0);
+            Tree *node_id = new Tree($2, 0);
+            node->addChild($1);
+            node->addChild($4);
+            $1->addChild(node_id);
+            $$ = node; } |
+        defin ID ';' {
+            Tree *node = new Tree($2, 0);
+            $1->addChild(node);
+            $$ = $1; }
 
 tran: cycle { 
             Tree *node = new Tree(" ", 0);
+            node->addChild($1);
             $$ = node; } | 
         tran cycle { 
-            Tree *node = new Tree(" ", 0);
-            Tree *node_two = new Tree(" ", 0);
-            node->addChild(node_two);
-            $$ = node; }
+            $1->addChild($2);
+            $$ = $1; }
 
-defin: ID '=' expr ';' {
-            Tree *node = new Tree("=", 0);
-            Tree *node_id = new Tree($1, 0);
-            node->addChild(node_id);
-            node->addChild($3);
-            $$ = node; } | 
-        ID { $$ = new Tree($1, 0); }
-
-try: ID '=' expr ';' {
-            Tree *node = new Tree("=", 0);
-            Tree *node_id = new Tree($1, 0);
-            node->addChild(node_id);
-            node->addChild($3);
-            $$ = node; }
+defin: INT {
+            Tree *node = new Tree("int", 0);
+            $$ = node;} | 
+        DOUBLE {
+            Tree *node = new Tree("double", 0);
+            $$ = node;}
 
 expr: NUM { $$ = new Tree($1, 0); } | 
         ID { $$ = new Tree($1, 0); } | 
@@ -109,8 +95,7 @@ expr: NUM { $$ = new Tree($1, 0); } |
             node->addChild($3);
             $$ = node; } | 
         '(' expr ')' { 
-            Tree *node = new Tree($2, 0);
-            $$ = node; }
+            $$ = $2; }
 
 comp: expr COMPARISON expr {
             Tree *node = new Tree($2, 0);

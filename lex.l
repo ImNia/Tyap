@@ -15,16 +15,6 @@ ws[ \t\n]
 operation[*/\+\-]
 %%
 
-("_"|{letter})("_"|{letter}|{digit})* { 
-        ch += yyleng; 
-        yylval.str = strdup(yytext); 
-        return ID; }
-
-[-+]?({digit}*\.{digit}+|{digit}+\.|{digit}+)([eE][-+]?{digit}+)?[flFL]? { 
-        ch += yyleng; 
-        yylval.str = strdup(yytext); 
-        return NUM; }
-
 "=" { ch += yyleng; return *yytext; }
 
 "print" { ch += yyleng; return PRINT; }
@@ -45,6 +35,16 @@ operation[*/\+\-]
 "!=" { ch += yyleng; return COMPARISON; }
 
 {operation} { ch += yyleng; return OPERATION; }
+
+("_"|{letter})("_"|{letter}|{digit})* { 
+        ch += yyleng; 
+        yylval.str = strdup(yytext); 
+        return ID; }
+
+[-+]?({digit}*\.{digit}+|{digit}+\.|{digit}+)([eE][-+]?{digit}+)?[flFL]? { 
+        ch += yyleng; 
+        yylval.str = strdup(yytext); 
+        return NUM; }
 
 {delim} { ch += yyleng; return *yytext; }
 {brac} { ch += yyleng; return *yytext; }
