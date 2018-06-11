@@ -20,16 +20,17 @@
 %token COMPARISON
 %token PRINT SCAN INT DOUBLE WHILE IF ELSE
 %right ASSIGN
-%left OPERATION
+%left OPERATION_S
+%left OPERATION_F
 %nonassoc BRAC
 
 %type<node> expr cycle defin comp prog tran
-%type<str> ID NUM OPERATION COMPARISON
+%type<str> ID NUM OPERATION_F OPERATION_S COMPARISON
 
 %%
 prog: cycle {
             root->addChild($1); } | 
-        cycle prog { 
+        prog cycle { 
             root->addChild($2); }
 
 cycle: PRINT expr ';' { 
@@ -89,7 +90,12 @@ expr: NUM { $$ = new Tree($1, 0); } |
             Tree *node = new Tree("-", 0);
             node->addChild($2);
             $$ = node; } | 
-        expr OPERATION expr {
+        expr OPERATION_S expr {
+            Tree *node = new Tree($2, 0);
+            node->addChild($1);
+            node->addChild($3);
+            $$ = node; } | 
+        expr OPERATION_F expr {
             Tree *node = new Tree($2, 0);
             node->addChild($1);
             node->addChild($3);

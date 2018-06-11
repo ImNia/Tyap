@@ -12,7 +12,8 @@ letter[a-zA-Z]
 delim[;]
 brac[(){}]
 ws[ \t\n]
-operation[*/\+\-]
+operation_s[\+\-]
+operation_f[*/]
 %%
 
 "=" { ch += yyleng; return *yytext; }
@@ -27,14 +28,16 @@ operation[*/\+\-]
 "if" { ch += yyleng; return IF; }
 "else" { ch += yyleng; return ELSE;}
 
-">" { ch += yyleng; return COMPARISON; }
-"<" { ch += yyleng; return COMPARISON; }
-">=" { ch += yyleng; return COMPARISON; }
-"<=" { ch += yyleng; return COMPARISON; }
-"==" { ch += yyleng; return COMPARISON; }
-"!=" { ch += yyleng; return COMPARISON; }
+">" { ch += yyleng; yylval.str = strdup(yytext); return COMPARISON; }
+"<" { ch += yyleng; yylval.str = strdup(yytext); return COMPARISON; }
+">=" { ch += yyleng; yylval.str = strdup(yytext); return COMPARISON; }
+"<=" { ch += yyleng; yylval.str = strdup(yytext); return COMPARISON; }
+"==" { ch += yyleng; yylval.str = strdup(yytext); return COMPARISON; }
+"!=" { ch += yyleng; yylval.str = strdup(yytext); return COMPARISON; }
 
-{operation} { ch += yyleng; return OPERATION; }
+{operation_s} { ch += yyleng; yylval.str = strdup(yytext); return OPERATION_S; }
+
+{operation_f} { ch += yyleng; yylval.str = strdup(yytext); return OPERATION_F; }
 
 ("_"|{letter})("_"|{letter}|{digit})* { 
         ch += yyleng; 

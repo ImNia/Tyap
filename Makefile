@@ -3,7 +3,7 @@ CC = g++
 all: test
 
 test: bison lex tree
-	$(CC) -o tree lex.yy.c y.tab.c tree.o
+	$(CC) -g -o tree lex.yy.c y.tab.c tree.o
 
 bison: 
 	bison -dy bison.y
