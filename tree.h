@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include <unordered_map>
+
 enum types {
     _ROOT,
     _ASSIGN, // =
@@ -34,4 +36,19 @@ class Tree
 		std::string value;
 		std::vector<Tree *>child;        
         int type;
+};
+
+class Hash
+{
+    public:
+        Hash();
+        ~Hash();
+        void addHash();
+        void addElement(std::string one);
+        void deleteHash();
+        int findElement(std::string one);
+
+    private:
+        std::vector<std::unordered_map<std::string, int>>table;
+        int level;
 };

@@ -9,6 +9,8 @@
     extern int yylex();
 	void yyerror(char *);
     Tree *root = new Tree("", _ROOT);
+    Hash *hash_table = new Hash();
+    int for_error = 0;
 %}
 
 %union{
@@ -63,18 +65,30 @@ cycle: PRINT expr ';' {
             Tree *node_id = new Tree($1, 0);
             node->addChild(node_id);
             node->addChild($3);
-            $$ = node; } |
+            $$ = node;
+            if(hash_table->findElement($1) == -1)
+                yyerror("variable not initialized"); } |
         defin ID '=' expr ';' {
             Tree *node = new Tree("=", _ASSIGN);
             Tree *node_id = new Tree($2, _ID);
             node->addChild($1);
             node->addChild($4);
             $1->addChild(node_id);
-            $$ = node; } |
+            $$ = node;
+
+            if(hash_table->findElement($2) == 0)
+                yyerror("variable yet initialized");
+            else
+                hash_table->addElement($2); } |
         defin ID ';' {
             Tree *node = new Tree($2, _ID);
             $1->addChild(node);
-            $$ = $1; }
+            $$ = $1; 
+        
+            if(hash_table->findElement($2) == 0)
+                yyerror("variable yet initialized");
+            else
+                hash_table->addElement($2); }
 
 tran: cycle { 
             Tree *node = new Tree(" ", _ROOT);
@@ -92,7 +106,10 @@ defin: INT {
             $$ = node;}
 
 expr: NUM { $$ = new Tree($1, _NUM); } | 
-        ID { $$ = new Tree($1, _ID); } |
+        ID { $$ = new Tree($1, _ID);
+
+            if(hash_table->findElement($1) == -1)
+                yyerror("variable not initialized"); } |
         expr OPERATION_S expr {
             Tree *node = new Tree($2, _MATH);
             node->addChild($1);
@@ -117,6 +134,7 @@ comp: expr COMPARISON expr {
 void yyerror(char *errmsg)
 {
 	fprintf(stderr, "%s (%d, %d): %s\n", errmsg, yylineno, ch, yytext);
+    for_error++;
 }
 
 int main(int argc, char **argv)
@@ -132,15 +150,20 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-//    Tree *root = new Tree(" ", 1);
 	ch = 1;
 	yylineno = 1;
 	yyparse();
-    compile(root);
-    std::string cmd = "fasm ./include/tmp.asm ";
-    cmd += argv[2];
-    std::system(cmd.c_str());
-    cmd = "rm ./include/tmp.asm";
-    std::system(cmd.c_str());
+ 
+    if(for_error == 0){
+        compile(root);
+        std::string cmd = "fasm ./include/tmp.asm ";
+        cmd += argv[2];
+        std::system(cmd.c_str());
+        cmd = "rm ./include/tmp.asm";
+        std::system(cmd.c_str());
+        cmd = "chmod +x ";
+        cmd += argv[2];
+        std::system(cmd.c_str());
+    }
 	return 0;
 }

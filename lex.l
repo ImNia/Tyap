@@ -5,16 +5,25 @@
     #include "y.tab.h"
     int ch;
     extern void yyerror (char *);
+    extern Hash *hash_table;
 %}
 
 digit[0-9]
 letter[a-zA-Z]
 delim[;]
-brac[(){}]
+brac[()]
 ws[ \t\n]
 operation_s[\+\-]
 operation_f[*/]
 %%
+"{" { 
+    ch += yyleng;
+    hash_table->addHash();
+    return *yytext; }
+"}" { 
+    ch += yyleng; 
+    hash_table->deleteHash();
+    return *yytext; }
 
 "=" { ch += yyleng; return *yytext; }
 

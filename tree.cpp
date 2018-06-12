@@ -34,3 +34,40 @@ int Tree::getType()
 {
     return this->type;
 }
+
+Hash::Hash()
+{
+    this->level = -1;
+    this->addHash();
+}
+
+Hash::~Hash(){}
+
+
+void Hash::addHash()
+{
+    this->level++;
+    std::unordered_map<std::string, int>name;
+    table.push_back(name);
+}
+
+
+void Hash::addElement(std::string one)
+{
+    table.back().insert({one, this->level});
+}
+
+void Hash::deleteHash()
+{
+    table.pop_back();
+    this->level--;
+}
+
+int Hash::findElement(std::string one)
+{
+    for(int i = 0; i <= level; i++){
+        if(table[i].find(one) != table[i].end())
+            return 0;                   
+    }
+    return -1;
+}
